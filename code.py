@@ -13,7 +13,7 @@ from numba import jit
 class Measurement:
 	def __init__(self):
 		self.setup = {
-		"deltat" : None,
+		"deltat" : 1,
 		"epsilon0" : None,
 		"dV" :None,
 		"Temp" : None,
