@@ -39,13 +39,9 @@ def matrixexponen(n,a):
     for k in range ( 0, s ):
         e = np.dot ( e, e )
     return e
-
-
 @jit(nopython=True)
 def lindsolve(params):
     deltat, epsilon0, dV, Temp, w, dtnum, tintnum, gammat = params
-
-    #calculate the period of the probe-signal, dT and the integration time
     f = w/(2*np.pi)
     T = 1/f
     dt = T*dtnum
@@ -98,42 +94,25 @@ def lindsolve(params):
     nrt_fourier_c_e =(2/dV)*(1.0/tint)*e*nRt_e*sinwt
     C_e = np.trapz(nrt_fourier_c_e, ts, dt)
     C_e = np.real(C_e)
-
-    #for debugging purposes one can also return the other values (nRt_g, nRt_e, rhogt, rhoet)
-	return C_g
-	return C_g, C_e, Rinv_g, Rinv_e , nRt_g, nRt_e, rhogt, rhoet
-
+    return C_g, C_e, Rinv_g, Rinv_e , nRt_g, nRt_e, rhogt, rhoet
 
 @jit(nopython=True)
 def liouvillians(deltat, epsilon0, dV, Temp, w, gammat, dt, tsu):
-    #collect the unitaries here
     unitary = np.zeros((4,4,len(tsu)),dtype=np.complex128)
-    #we collect here h, hdot, A1 and A2
-
-    #evaluate the periodic liouvillian for one period
     for idx,t in enumerate(tsu):
-
         hcoef=epsilon0-e*dV*np.sin(w*t)
         H=np.array([[0,deltat/2],[deltat/2,hcoef]],dtype=np.complex128)/hbar
-
         ii=np.eye(2,dtype=np.complex128)
         pre=np.kron(ii,H)
         post=np.kron(H,ii)
-        #carry out the vectorization
         hamil = -1j*(pre - post)
-        #calculate the other terms in the liouvillian
         d  = deltat
         x  = hcoef
-
-        #calculate the normalized excited and ground states for the jump operators
         gr = np.array([(-x-np.sqrt(x**2+d**2))/d ,1], dtype = np.complex128)
         exc = np.array([(-x+np.sqrt(x**2+d**2))/d ,1], dtype = np.complex128)
         gr_n = gr/np.linalg.norm(gr)
         exc_n = exc/np.linalg.norm(exc)
-
-        #energy splitting
         esplit = np.sqrt(d**2+x**2)
-        #calculate the relaxation rate
         if Temp == 0: #if the temperature is zero then we have to use these rates
             gamma1 = gammat
             gamma2 = 0
@@ -202,27 +181,27 @@ def time_evolve(psi0,unitary,ts,tsu):
     return nRt, rhot
 
 class Measurement:
-	def __init__(self,name):
-		self.name = name
-		self.setup = {
-			"deltat" : None,
-			"epsilon0" : None,
-			"dV" :None,
-			"Temp" : None,
-			"w" : None,
-			"dtnum": None,
-			"tintnum" : None,
-			"gammat" : None
-		}
-		self.ismeasured = False
+    def __init__(self,name):
+        self.name = name
+        self.setup = {
+            "deltat" : None,
+            "epsilon0" : None,
+            "dV" :None,
+            "Temp" : None,
+            "w" : None,
+            "dtnum": None,
+            "tintnum" : None,
+            "gammat" : None
+        }
+        self.ismeasured = False
 
-	def measure(self):
-		ress = lindsolve(self.setup["deltat"],self.setup["epsilon0"],self.setup["dV"],self.setup["Temp"],
-		self.setup["w"],self.setup["dtnum"],self.setup["tintnum"],self.setup["gammat"])
-		returnvalue = Result(setupdata = self.setup)
-		for idx, key in enumerate(list(returnvalue.datas.keys())):
-			returnvalue.datas[key] = ress[idx]
-		return returnvalue
+    def measure(self):
+        ress = lindsolve(np.array([self.setup["deltat"],self.setup["epsilon0"],self.setup["dV"],self.setup["Temp"],
+        self.setup["w"],self.setup["dtnum"],self.setup["tintnum"],self.setup["gammat"]],dtype = np.float64))
+        returnvalue = Result(setupdata = self.setup)
+        for idx, key in enumerate(list(returnvalue.datas.keys())):
+            returnvalue.datas[key] = ress[idx]
+        return returnvalue
 
 class Result:
 	def __init__(self,setupdata):
