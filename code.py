@@ -1,6 +1,5 @@
-def d():
-	print("We are in demo.py")
-	print("Now I have modified my demoprint function")
+def demoprint():
+	print("This function is used to check version control")
 
 import time
 import itertools
@@ -11,16 +10,17 @@ from scipy.constants import e, hbar, k
 from numba import jit
 
 class Measurement:
-	def __init__(self):
+	def __init__(self,name):
+		self.name = name
 		self.setup = {
-		"deltat" : 1,
-		"epsilon0" : None,
-		"dV" :None,
-		"Temp" : None,
-		"w" : None,
-		"dtnum": None,
-		"tintnum" : None,
-		"gammat" : None
+			"deltat" : None,
+			"epsilon0" : None,
+			"dV" :None,
+			"Temp" : None,
+			"w" : None,
+			"dtnum": None,
+			"tintnum" : None,
+			"gammat" : None
 		}
 		self.ismeasured = False
 
