@@ -1,5 +1,5 @@
 def demoprint():
-	print("This function is used to check version control")
+    print("This function is used to check version control")
 
 import time
 import itertools
@@ -204,17 +204,18 @@ class Measurement:
         return returnvalue
 
 class Result:
-	def __init__(self,setupdata):
-		self.setup = setupdata
-		self.datas = {
-		"Cg" : None,
-		"Ce" : None,
-		"Rinvg" : None,
-		"Rinve" : None,
-		"nRtg" : None,
-		"nRte" : None,
-		"rhotg" : None,
-		"rhote" : None
-		#"edotg" : None,
-		#"edote" : None
-		}
+    def __init__(self,setupdata,name = None):
+        self.name = name
+        self.setup = setupdata
+        self.datas = {
+         "Cg" : None,
+         "Ce" : None,
+         "Rinvg" : None,
+         "Rinve" : None,
+         "nRtg" : None,
+         "nRte" : None,
+         "rhotg" : None,
+         "rhote" : None
+        #"edotg" : None,
+        #"edote" : None
+        }
