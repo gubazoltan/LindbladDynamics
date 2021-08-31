@@ -1,1 +1,1 @@
-import lindbladQD.code
+from lindbladQD.code import *
